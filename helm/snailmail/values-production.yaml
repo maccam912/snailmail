@@ -35,3 +35,12 @@ resources:
   requests:
     cpu: 200m
     memory: 256Mi
+
+# Production environment configuration
+env:
+  NODE_ENV: production
+  # OpenTelemetry tracing configuration for production
+  TRACING_ENABLED: "true"
+  TRACE_EXPORTER: "otlp"
+  OTLP_ENDPOINT: "http://opentelemetry-collector:4318/v1/traces"
+  # OTLP_HEADERS: '{"Authorization":"Bearer your-production-token"}'
