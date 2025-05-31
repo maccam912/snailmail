@@ -25,10 +25,12 @@ serviceAccount:
 
 podAnnotations: {}
 
-podSecurityContext: {}
+podSecurityContext:
+  {}
   # fsGroup: 2000
 
-securityContext: {}
+securityContext:
+  {}
   # capabilities:
   #   drop:
   #   - ALL
@@ -48,7 +50,7 @@ ingress:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    nginx.ingress.kubernetes.io/websocket-services: "{{ include \"snailmail.fullname\" . }}"
+    nginx.ingress.kubernetes.io/websocket-services: '{{ include "snailmail.fullname" . }}'
     # cert-manager annotations for TLS
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
   hosts:
@@ -56,7 +58,8 @@ ingress:
       paths:
         - path: /
           pathType: Prefix
-  tls: []
+  tls:
+    []
     # Automatically configure TLS for all hosts
     # - secretName: snailmail-tls
     #   hosts:

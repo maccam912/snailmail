@@ -8,16 +8,16 @@ replicaCount: 1
 ingress:
   annotations:
     nginx.ingress.kubernetes.io/rewrite-target: /
-    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600" 
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    nginx.ingress.kubernetes.io/websocket-services: "{{ include \"snailmail.fullname\" . }}"
+    nginx.ingress.kubernetes.io/websocket-services: '{{ include "snailmail.fullname" . }}'
     # No cert-manager annotations for local development
   hosts:
     - host: snailmail.local
       paths:
         - path: /
           pathType: Prefix
-  tls: []  # No TLS for local development
+  tls: [] # No TLS for local development
 
 # Lower resource requirements for development
 resources:
