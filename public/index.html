@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snailmail Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 { color: #333; }
+        .status { margin: 20px 0; }
+        .connect-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        .connect-btn:hover { background: #0056b3; }
+        #messages {
+            height: 200px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            background: #f9f9f9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🐌 Snailmail Game</h1>
+        <div class="status">
+            <p>Status: <span id="status">Disconnected</span></p>
+            <button class="connect-btn" onclick="connect()">Connect to Game</button>
+            <button class="connect-btn" onclick="disconnect()">Disconnect</button>
+        </div>
+        <div id="messages"></div>
+        <p><strong>Game Server:</strong> Colyseus multiplayer server is running!</p>
+        <p><a href="/monitor" target="_blank">View Server Monitor</a></p>
+    </div>
+
+    <script src="https://unpkg.com/colyseus.js@^0.16.0/dist/colyseus.js"></script>
+    <script>
+        let client;
+        let room;
+        
+        function addMessage(msg) {
+            const messages = document.getElementById('messages');
+            messages.innerHTML += '<div>' + new Date().toLocaleTimeString() + ': ' + msg + '</div>';
+            messages.scrollTop = messages.scrollHeight;
+        }
+        
+        function connect() {
+            const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
+            const host = window.location.host;
+            const endpoint = `${protocol}://${host}`;
+            
+            client = new Colyseus.Client(endpoint);
+            
+            client.joinOrCreate("my_room").then(roomInstance => {
+                room = roomInstance;
+                document.getElementById('status').textContent = 'Connected';
+                addMessage('Connected to room: ' + room.id);
+                
+                room.onStateChange((state) => {
+                    addMessage('State: ' + JSON.stringify(state));
+                });
+                
+                room.onLeave(() => {
+                    document.getElementById('status').textContent = 'Disconnected';
+                    addMessage('Left room');
+                });
+                
+            }).catch(e => {
+                addMessage('Failed to connect: ' + e.message);
+            });
+        }
+        
+        function disconnect() {
+            if (room) {
+                room.leave();
+            }
+        }
+    </script>
+</body>
+</html>

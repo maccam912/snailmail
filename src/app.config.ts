@@ -1,6 +1,8 @@
 import config from "@colyseus/tools";
 import { monitor } from "@colyseus/monitor";
 import { playground } from "@colyseus/playground";
+import express from "express";
+import path from "path";
 
 /**
  * Import your Room files
@@ -30,6 +32,9 @@ export default config({
      */
     if (process.env.NODE_ENV !== "production") {
       app.use("/", playground());
+    } else {
+      // In production, serve static files from public directory
+      app.use(express.static(path.join(__dirname, "..", "public")));
     }
 
     /**
