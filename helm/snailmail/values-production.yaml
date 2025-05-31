@@ -7,7 +7,7 @@ ingress:
     nginx.ingress.kubernetes.io/rewrite-target: /
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
-    nginx.ingress.kubernetes.io/websocket-services: "{{ include \"snailmail.fullname\" . }}"
+    nginx.ingress.kubernetes.io/websocket-services: '{{ include "snailmail.fullname" . }}'
     # Custom cert-manager cluster issuer if different from default
     cert-manager.io/cluster-issuer: "your-cluster-issuer"
   hosts:
