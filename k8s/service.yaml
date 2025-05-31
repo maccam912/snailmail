@@ -7,10 +7,10 @@ metadata:
 spec:
   type: ClusterIP
   ports:
-  - port: 2567
-    targetPort: 2567
-    protocol: TCP
-    name: http
+    - port: 2567
+      targetPort: 2567
+      protocol: TCP
+      name: http
   selector:
     app: snailmail-server
 ---
@@ -25,13 +25,13 @@ metadata:
     nginx.ingress.kubernetes.io/websocket-services: "snailmail-service"
 spec:
   rules:
-  - host: snailmail.koski.co  # Replace with your domain
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: snailmail-service
-            port:
-              number: 2567
+    - host: snailmail.koski.co # Replace with your domain
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: snailmail-service
+                port:
+                  number: 2567

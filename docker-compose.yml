@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   snailmail:
@@ -9,7 +9,15 @@ services:
       - NODE_ENV=production
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:2567/hello_world"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "--quiet",
+          "--tries=1",
+          "--spider",
+          "http://localhost:2567/hello_world",
+        ]
       interval: 30s
       timeout: 10s
       retries: 3
