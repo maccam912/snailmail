@@ -1,27 +1,115 @@
 import { Room, Client } from "@colyseus/core";
 import { MyRoomState } from "./schema/MyRoomState";
+import { createSpan, getTracer } from "../tracing";
+import { SpanKind } from "@opentelemetry/api";
 
 export class MyRoom extends Room<MyRoomState> {
   maxClients = 4;
   state = new MyRoomState();
 
   onCreate(options: any) {
+    createSpan(
+      "room.onCreate",
+      (span) => {
+        span.setAttributes({
+          "room.id": this.roomId,
+          "room.maxClients": this.maxClients,
+          "room.options": JSON.stringify(options),
+        });
+
+        console.log("Room", this.roomId, "created with options:", options);
+      },
+      {
+        kind: SpanKind.SERVER,
+        attributes: {
+          "room.type": "MyRoom",
+          "room.id": this.roomId,
+        },
+      },
+    );
+
     this.onMessage("type", (client, message) => {
-      //
-      // handle "type" message
-      //
+      // Trace message handling
+      createSpan(
+        "room.onMessage",
+        (messageSpan) => {
+          messageSpan.setAttributes({
+            "room.id": this.roomId,
+            "client.sessionId": client.sessionId,
+            "message.type": "type",
+            "message.content": JSON.stringify(message),
+          });
+
+          //
+          // handle "type" message
+          //
+        },
+        { kind: SpanKind.SERVER },
+      );
     });
   }
 
   onJoin(client: Client, options: any) {
-    console.log(client.sessionId, "joined!");
+    createSpan(
+      "room.onJoin",
+      (span) => {
+        span.setAttributes({
+          "room.id": this.roomId,
+          "client.sessionId": client.sessionId,
+          "client.options": JSON.stringify(options),
+          "room.clientCount": this.clients.length,
+        });
+
+        console.log(client.sessionId, "joined!");
+      },
+      {
+        kind: SpanKind.SERVER,
+        attributes: {
+          "room.type": "MyRoom",
+        },
+      },
+    );
   }
 
   onLeave(client: Client, consented: boolean) {
-    console.log(client.sessionId, "left!");
+    createSpan(
+      "room.onLeave",
+      (span) => {
+        span.setAttributes({
+          "room.id": this.roomId,
+          "client.sessionId": client.sessionId,
+          "client.consented": consented,
+          "room.clientCount": this.clients.length - 1, // Will be one less after this client leaves
+        });
+
+        console.log(client.sessionId, "left!");
+      },
+      {
+        kind: SpanKind.SERVER,
+        attributes: {
+          "room.type": "MyRoom",
+        },
+      },
+    );
   }
 
   onDispose() {
-    console.log("room", this.roomId, "disposing...");
+    createSpan(
+      "room.onDispose",
+      (span) => {
+        span.setAttributes({
+          "room.id": this.roomId,
+          "room.finalClientCount": this.clients.length,
+        });
+
+        console.log("room", this.roomId, "disposing...");
+      },
+      {
+        kind: SpanKind.SERVER,
+        attributes: {
+          "room.type": "MyRoom",
+        },
+      },
+    );
   }
 }

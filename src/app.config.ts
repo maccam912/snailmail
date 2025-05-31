@@ -3,6 +3,8 @@ import { monitor } from "@colyseus/monitor";
 import { playground } from "@colyseus/playground";
 import express from "express";
 import path from "path";
+import { createSpan } from "./tracing";
+import { SpanKind } from "@opentelemetry/api";
 
 /**
  * Import your Room files
@@ -23,7 +25,20 @@ export default config({
      * Read more: https://expressjs.com/en/starter/basic-routing.html
      */
     app.get("/hello_world", (req, res) => {
-      res.send("It's time to kick ass and chew bubblegum!");
+      createSpan(
+        "http.hello_world",
+        (span) => {
+          span.setAttributes({
+            "http.method": req.method,
+            "http.url": req.url,
+            "http.user_agent": req.get("User-Agent") || "",
+            "http.remote_addr": req.ip,
+          });
+
+          res.send("It's time to kick ass and chew bubblegum!");
+        },
+        { kind: SpanKind.SERVER },
+      );
     });
 
     /**

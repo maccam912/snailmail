@@ -31,3 +31,7 @@ resources:
 # Development environment
 env:
   NODE_ENV: development
+  # OpenTelemetry tracing configuration for local development
+  TRACING_ENABLED: "true"
+  TRACE_EXPORTER: "console"
+  # For local development, use console output for easy debugging

@@ -10,6 +10,20 @@ This project has been created using [⚔️ `create-colyseus-app`](https://githu
 npm start
 ```
 
+## 🔍 OpenTelemetry Tracing
+
+This application includes comprehensive tracing instrumentation for monitoring and observability. See [TRACING.md](./TRACING.md) for detailed configuration and usage.
+
+Quick start with tracing:
+
+```bash
+# Enable tracing with console output (development)
+TRACING_ENABLED=true npm start
+
+# Enable tracing with Jaeger exporter (production)
+TRACING_ENABLED=true TRACE_EXPORTER=jaeger JAEGER_ENDPOINT=http://localhost:14268/api/traces npm start
+```
+
 ## 🐳 Docker Deployment
 
 This application can be containerized for production deployment. See [DOCKER.md](./DOCKER.md) for detailed instructions.
