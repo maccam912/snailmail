@@ -21,6 +21,16 @@ docker build -t snailmail .
 docker run -p 2567:2567 snailmail
 ```
 
+### Kubernetes & Helm
+
+Deploy to Kubernetes using the provided Helm chart:
+
+```bash
+helm install snailmail helm/snailmail
+```
+
+The Helm chart includes TLS support via cert-manager and production-ready configurations.
+
 ## Structure
 
 - `index.ts`: main entry point, register an empty room handler and attach [`@colyseus/monitor`](https://github.com/colyseus/colyseus-monitor)

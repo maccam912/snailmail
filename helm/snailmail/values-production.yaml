@@ -1,0 +1,37 @@
+# Example values for production deployment
+# Copy this file and customize for your environment
+
+# Production domain configuration
+ingress:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/websocket-services: "{{ include \"snailmail.fullname\" . }}"
+    # Custom cert-manager cluster issuer if different from default
+    cert-manager.io/cluster-issuer: "your-cluster-issuer"
+  hosts:
+    - host: snailmail.yourdomain.com
+      paths:
+        - path: /
+          pathType: Prefix
+  # TLS will be automatically configured when cert-manager annotation is present
+
+# Scale for production load
+replicaCount: 3
+
+# Enable auto-scaling
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 70
+
+# Production resource limits
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 200m
+    memory: 256Mi
