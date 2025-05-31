@@ -13,6 +13,8 @@
     "build": "npm run clean && tsc",
     "clean": "rimraf build",
     "test": "mocha test/**/*.ts --require tsx/cjs",
+    "test:helm": "mocha test/helm_test.ts --require tsx/cjs",
+    "validate:helm": "./scripts/validate-helm.sh",
     "format": "prettier --write .",
     "prepare": "husky"
   },
