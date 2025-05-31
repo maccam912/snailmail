@@ -59,7 +59,31 @@ Set these in your GitHub repository settings:
 
 ## Kubernetes Deployment
 
-Example deployment files are provided in the `k8s/` directory:
+### Helm Chart (Recommended)
+
+A Helm chart is provided in the `helm/snailmail/` directory with TLS support via cert-manager:
+
+```bash
+# Install with default values
+helm install snailmail helm/snailmail
+
+# Install with custom values
+helm install snailmail helm/snailmail --set ingress.hosts[0].host=snailmail.yourdomain.com
+```
+
+The Helm chart includes:
+
+- TLS certificates via cert-manager
+- Configurable ingress with WebSocket support
+- Horizontal Pod Autoscaler support
+- Production-ready resource limits
+- Health checks and monitoring
+
+See [helm/snailmail/README.md](helm/snailmail/README.md) for detailed configuration options.
+
+### Direct YAML Deployment
+
+Alternative deployment files are provided in the `k8s/` directory:
 
 - `deployment.yaml` - Kubernetes Deployment with resource limits and health checks
 - `service.yaml` - Service and Ingress configuration

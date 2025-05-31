@@ -1,0 +1,33 @@
+# Example values for local development/testing
+# For use with minikube or local k8s clusters
+
+# Single replica for development
+replicaCount: 1
+
+# Disable TLS for local development
+ingress:
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600" 
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    nginx.ingress.kubernetes.io/websocket-services: "{{ include \"snailmail.fullname\" . }}"
+    # No cert-manager annotations for local development
+  hosts:
+    - host: snailmail.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []  # No TLS for local development
+
+# Lower resource requirements for development
+resources:
+  limits:
+    cpu: 200m
+    memory: 256Mi
+  requests:
+    cpu: 50m
+    memory: 64Mi
+
+# Development environment
+env:
+  NODE_ENV: development

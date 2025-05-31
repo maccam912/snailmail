@@ -1,0 +1,16 @@
+apiVersion: v2
+name: snailmail
+description: A Helm chart for Snailmail Colyseus game server
+version: 0.1.0
+appVersion: "1.0.0"
+keywords:
+  - games
+  - colyseus
+  - websocket
+  - multiplayer
+home: https://github.com/maccam912/snailmail
+sources:
+  - https://github.com/maccam912/snailmail
+maintainers:
+  - name: snailmail
+    url: https://github.com/maccam912/snailmail
