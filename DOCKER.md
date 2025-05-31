@@ -45,7 +45,7 @@ The container is designed to be deployed on Kubernetes. See the `k8s/` directory
 
 The repository includes automated Docker image building via GitHub Actions:
 
-- **Trigger**: Push to `main` branch
+- **Trigger**: Push to `main` branch, pull requests, or manual workflow dispatch
 - **Registry**: Harbor registry at `harbor.rackspace.koski.co`
 - **Tags**: `latest` for main branch, SHA and branch names for other pushes
 - **Platforms**: Multi-arch build (linux/amd64, linux/arm64)
