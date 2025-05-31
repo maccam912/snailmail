@@ -90,6 +90,12 @@ affinity: {}
 # Environment variables
 env:
   NODE_ENV: production
+  # OpenTelemetry tracing configuration
+  TRACING_ENABLED: "false"
+  TRACE_EXPORTER: "otlp"
+  OTLP_ENDPOINT: "http://opentelemetry-collector:4318/v1/traces"
+  # OTLP_HEADERS: '{"Authorization":"Bearer your-token"}'
+  # JAEGER_ENDPOINT: "http://jaeger-collector:14268/api/traces"
 
 # Probes configuration
 probes:

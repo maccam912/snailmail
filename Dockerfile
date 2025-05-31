@@ -45,5 +45,10 @@ EXPOSE 2567
 # Set production environment
 ENV NODE_ENV=production
 
+# OpenTelemetry tracing environment variables (can be overridden at runtime)
+ENV TRACING_ENABLED=false
+ENV TRACE_EXPORTER=otlp
+ENV OTLP_ENDPOINT=http://localhost:4318/v1/traces
+
 # Start the server
 CMD ["build/index.js"]

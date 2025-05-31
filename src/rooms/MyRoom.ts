@@ -8,33 +8,13 @@ export class MyRoom extends Room<MyRoomState> {
   state = new MyRoomState();
 
   onCreate(options: any) {
-    return createSpan(
+    createSpan(
       "room.onCreate",
-      async (span) => {
+      (span) => {
         span.setAttributes({
           "room.id": this.roomId,
           "room.maxClients": this.maxClients,
           "room.options": JSON.stringify(options),
-        });
-
-        this.onMessage("type", (client, message) => {
-          // Trace message handling
-          createSpan(
-            "room.onMessage",
-            (messageSpan) => {
-              messageSpan.setAttributes({
-                "room.id": this.roomId,
-                "client.sessionId": client.sessionId,
-                "message.type": "type",
-                "message.content": JSON.stringify(message),
-              });
-
-              //
-              // handle "type" message
-              //
-            },
-            { kind: SpanKind.SERVER },
-          );
         });
 
         console.log("Room", this.roomId, "created with options:", options);
@@ -47,12 +27,32 @@ export class MyRoom extends Room<MyRoomState> {
         },
       },
     );
+
+    this.onMessage("type", (client, message) => {
+      // Trace message handling
+      createSpan(
+        "room.onMessage",
+        (messageSpan) => {
+          messageSpan.setAttributes({
+            "room.id": this.roomId,
+            "client.sessionId": client.sessionId,
+            "message.type": "type",
+            "message.content": JSON.stringify(message),
+          });
+
+          //
+          // handle "type" message
+          //
+        },
+        { kind: SpanKind.SERVER },
+      );
+    });
   }
 
   onJoin(client: Client, options: any) {
-    return createSpan(
+    createSpan(
       "room.onJoin",
-      async (span) => {
+      (span) => {
         span.setAttributes({
           "room.id": this.roomId,
           "client.sessionId": client.sessionId,
@@ -72,9 +72,9 @@ export class MyRoom extends Room<MyRoomState> {
   }
 
   onLeave(client: Client, consented: boolean) {
-    return createSpan(
+    createSpan(
       "room.onLeave",
-      async (span) => {
+      (span) => {
         span.setAttributes({
           "room.id": this.roomId,
           "client.sessionId": client.sessionId,
@@ -94,9 +94,9 @@ export class MyRoom extends Room<MyRoomState> {
   }
 
   onDispose() {
-    return createSpan(
+    createSpan(
       "room.onDispose",
-      async (span) => {
+      (span) => {
         span.setAttributes({
           "room.id": this.roomId,
           "room.finalClientCount": this.clients.length,

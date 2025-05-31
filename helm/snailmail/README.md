@@ -131,3 +131,23 @@ The ingress is configured to support WebSocket connections required by the Colys
 ## Monitoring
 
 The application includes a monitoring endpoint at `/monitor` (password protected in production).
+
+## OpenTelemetry Tracing
+
+The chart supports OpenTelemetry tracing configuration through environment variables:
+
+```yaml
+env:
+  TRACING_ENABLED: "true"
+  TRACE_EXPORTER: "otlp"
+  OTLP_ENDPOINT: "http://opentelemetry-collector:4318/v1/traces"
+  OTLP_HEADERS: '{"Authorization":"Bearer your-token"}'
+```
+
+Available exporters:
+
+- `console` - Logs traces to console (development)
+- `jaeger` - Sends traces to Jaeger collector
+- `otlp` - Sends traces via OpenTelemetry Protocol (recommended)
+
+See [TRACING.md](../../TRACING.md) for detailed configuration options.
