@@ -10,6 +10,17 @@ This project has been created using [⚔️ `create-colyseus-app`](https://githu
 npm start
 ```
 
+## 🐳 Docker Deployment
+
+This application can be containerized for production deployment. See [DOCKER.md](./DOCKER.md) for detailed instructions.
+
+Quick start with Docker:
+
+```bash
+docker build -t snailmail .
+docker run -p 2567:2567 snailmail
+```
+
 ## Structure
 
 - `index.ts`: main entry point, register an empty room handler and attach [`@colyseus/monitor`](https://github.com/colyseus/colyseus-monitor)
