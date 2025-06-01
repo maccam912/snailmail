@@ -2,12 +2,4 @@
 
 # Copilot Instructions for Snailmail
 
-## Code Formatting
-
-Always run `npx prettier --write .` before committing any changes to ensure proper code formatting. All files should follow Prettier formatting standards.
-
-To check formatting issues without fixing them, use:
-
-```bash
-npx prettier --check .
-```
+This project contains a Colyseus game server with Docker and Kubernetes deployment capabilities.
