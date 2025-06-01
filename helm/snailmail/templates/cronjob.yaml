@@ -1,0 +1,63 @@
+{{- if .Values.imageUpdate.enabled }}
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "snailmail.fullname" . }}-image-updater
+  labels:
+    {{- include "snailmail.labels" . | nindent 4 }}
+    app.kubernetes.io/component: image-updater
+spec:
+  schedule: {{ .Values.imageUpdate.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            {{- include "snailmail.selectorLabels" . | nindent 12 }}
+            app.kubernetes.io/component: image-updater
+        spec:
+          serviceAccountName: {{ include "snailmail.fullname" . }}-updater
+          restartPolicy: OnFailure
+          containers:
+          - name: image-updater
+            image: bitnami/kubectl:latest
+            imagePullPolicy: IfNotPresent
+            command:
+            - /bin/bash
+            - -c
+            - |
+              set -euo pipefail
+              
+              DEPLOYMENT_NAME="{{ include "snailmail.fullname" . }}"
+              NAMESPACE="{{ .Release.Namespace }}"
+              IMAGE_REPO="{{ .Values.image.repository }}"
+              IMAGE_TAG="{{ .Values.image.tag | default .Chart.AppVersion }}"
+              FULL_IMAGE="${IMAGE_REPO}:${IMAGE_TAG}"
+              
+              echo "Checking for updates to image: ${FULL_IMAGE}"
+              
+              # Get current image in deployment
+              CURRENT_IMAGE=$(kubectl get deployment "${DEPLOYMENT_NAME}" -n "${NAMESPACE}" -o jsonpath='{.spec.template.spec.containers[0].image}')
+              echo "Current deployment image: ${CURRENT_IMAGE}"
+              
+              # Force a rollout restart to pull the latest image
+              # This works because imagePullPolicy is set to Always when imageUpdate is enabled
+              echo "Triggering rollout restart to check for new image..."
+              kubectl rollout restart deployment/"${DEPLOYMENT_NAME}" -n "${NAMESPACE}"
+              
+              # Wait for rollout to complete
+              echo "Waiting for rollout to complete..."
+              kubectl rollout status deployment/"${DEPLOYMENT_NAME}" -n "${NAMESPACE}" --timeout=300s
+              
+              echo "Image update check completed successfully"
+            resources:
+              limits:
+                cpu: 100m
+                memory: 128Mi
+              requests:
+                cpu: 50m
+                memory: 64Mi
+{{- end }}

@@ -44,3 +44,9 @@ env:
   TRACE_EXPORTER: "otlp"
   OTLP_ENDPOINT: "http://opentelemetry-collector:4318/v1/traces"
   # OTLP_HEADERS: '{"Authorization":"Bearer your-production-token"}'
+
+# Image update configuration - enable for production to get automatic updates
+imageUpdate:
+  enabled: true
+  schedule: "*/5 * * * *" # Every 5 minutes in production
+  alwaysPull: true

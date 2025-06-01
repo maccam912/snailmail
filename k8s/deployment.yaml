@@ -17,6 +17,9 @@ spec:
       containers:
         - name: snailmail-server
           image: harbor.rackspace.koski.co/snailmail:latest
+          # For automatic image updates, change imagePullPolicy to Always
+          # and set up a CronJob to periodically restart this deployment
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 2567
           env:
