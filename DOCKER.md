@@ -26,7 +26,7 @@ This will build and run the application with proper health checks.
 
 ## Production Deployment
 
-The container is designed to be deployed on Kubernetes. See the `k8s/` directory for example configurations.
+The container is designed to be deployed on Kubernetes using the provided Helm chart.
 
 ### Environment Variables
 
@@ -59,7 +59,7 @@ Set these in your GitHub repository settings:
 
 ## Kubernetes Deployment
 
-### Helm Chart (Recommended)
+### Helm Chart
 
 A Helm chart is provided in the `helm/snailmail/` directory with TLS support via cert-manager:
 
@@ -80,18 +80,3 @@ The Helm chart includes:
 - Health checks and monitoring
 
 See [helm/snailmail/README.md](helm/snailmail/README.md) for detailed configuration options.
-
-### Direct YAML Deployment
-
-Alternative deployment files are provided in the `k8s/` directory:
-
-- `deployment.yaml` - Kubernetes Deployment with resource limits and health checks
-- `service.yaml` - Service and Ingress configuration
-
-Deploy to Kubernetes:
-
-```bash
-kubectl apply -f k8s/
-```
-
-Make sure to update the ingress hostname in `k8s/service.yaml` to match your domain.
