@@ -13,8 +13,9 @@ echo "🔍 Validating Helm templates..."
 
 # Check if helm is available
 if ! command -v helm &> /dev/null; then
-    echo "❌ Error: helm command not found. Please install Helm."
-    exit 1
+    echo "⚠️  Warning: helm command not found. Skipping Helm validation."
+    echo "   Install Helm to run full validation: https://helm.sh/docs/intro/install/"
+    exit 0
 fi
 
 # Validate with default values
