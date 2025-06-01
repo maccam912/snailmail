@@ -52,10 +52,12 @@ export class MyRoom extends Room<GameState> {
     this.onMessage("move", (client, message) => {
       const player = this.state.players.get(client.sessionId);
       if (player) {
-        if (message.x !== undefined) { // Changed condition
+        if (message.x !== undefined) {
+          // Changed condition
           player.x += message.x;
         }
-        if (message.y !== undefined) { // Changed condition
+        if (message.y !== undefined) {
+          // Changed condition
           player.y += message.y;
         }
       }
