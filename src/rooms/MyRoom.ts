@@ -1,13 +1,14 @@
 import { Room, Client } from "@colyseus/core";
-import { MyRoomState } from "./schema/MyRoomState";
+import { GameState, Player } from "./schema/GameState";
 import { createSpan, getTracer } from "../tracing";
 import { SpanKind } from "@opentelemetry/api";
 
-export class MyRoom extends Room<MyRoomState> {
+export class MyRoom extends Room<GameState> {
   maxClients = 4;
-  state = new MyRoomState();
 
   onCreate(options: any) {
+    this.setState(new GameState());
+
     createSpan(
       "room.onCreate",
       (span) => {
@@ -47,6 +48,20 @@ export class MyRoom extends Room<MyRoomState> {
         { kind: SpanKind.SERVER },
       );
     });
+
+    this.onMessage("move", (client, message) => {
+      const player = this.state.players.get(client.sessionId);
+      if (player) {
+        if (message.x !== undefined) {
+          // Changed condition
+          player.x += message.x;
+        }
+        if (message.y !== undefined) {
+          // Changed condition
+          player.y += message.y;
+        }
+      }
+    });
   }
 
   onJoin(client: Client, options: any) {
@@ -61,6 +76,10 @@ export class MyRoom extends Room<MyRoomState> {
         });
 
         console.log(client.sessionId, "joined!");
+        const player = new Player();
+        player.x = Math.random() * 10;
+        player.y = 0;
+        this.state.players.set(client.sessionId, player);
       },
       {
         kind: SpanKind.SERVER,
@@ -79,10 +98,11 @@ export class MyRoom extends Room<MyRoomState> {
           "room.id": this.roomId,
           "client.sessionId": client.sessionId,
           "client.consented": consented,
-          "room.clientCount": this.clients.length - 1, // Will be one less after this client leaves
+          "room.clientCount": this.clients.length - 1,
         });
 
         console.log(client.sessionId, "left!");
+        this.state.players.delete(client.sessionId);
       },
       {
         kind: SpanKind.SERVER,
