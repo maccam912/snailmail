@@ -48,5 +48,5 @@ env:
 # Image update configuration - enable for production to get automatic updates
 imageUpdate:
   enabled: true
-  schedule: "*/5 * * * *"  # Every 5 minutes in production
+  schedule: "*/5 * * * *" # Every 5 minutes in production
   alwaysPull: true

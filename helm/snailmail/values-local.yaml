@@ -35,7 +35,6 @@ env:
   TRACING_ENABLED: "true"
   TRACE_EXPORTER: "console"
   # For local development, use console output for easy debugging
-
 # Image updates typically not needed for local development
 # Uncomment and configure if needed for testing
 # imageUpdate:
