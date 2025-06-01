@@ -18,7 +18,7 @@ ingress:
   # TLS will be automatically configured when cert-manager annotation is present
 
 # Scale for production load
-replicaCount: 3
+replicaCount: 1
 
 # Enable auto-scaling
 autoscaling:
