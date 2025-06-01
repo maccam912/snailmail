@@ -7,70 +7,66 @@
     <style>
       body {
         font-family: Arial, sans-serif;
-        max-width: 800px;
-        margin: 0 auto;
-        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-top: 20px;
         background-color: #f5f5f5;
       }
-      .container {
-        background: white;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      #gameCanvas {
+        border: 1px solid black;
+        margin-bottom: 20px;
       }
-      h1 {
-        color: #333;
-      }
-      .status {
-        margin: 20px 0;
-      }
-      .connect-btn {
+      .controls button {
         background: #007bff;
         color: white;
         border: none;
-        padding: 10px 20px;
+        padding: 10px 15px;
         border-radius: 5px;
         cursor: pointer;
-        margin: 10px 5px;
+        margin: 5px;
       }
-      .connect-btn:hover {
+      .controls button:hover {
         background: #0056b3;
       }
-      #messages {
-        height: 200px;
-        overflow-y: auto;
-        border: 1px solid #ddd;
-        padding: 10px;
-        margin: 10px 0;
-        background: #f9f9f9;
+      .status {
+        margin-bottom: 10px;
       }
     </style>
   </head>
   <body>
-    <div class="container">
-      <h1>🐌 Snailmail Game</h1>
-      <div class="status">
-        <p>Status: <span id="status">Disconnected</span></p>
-        <button class="connect-btn" onclick="connect()">Connect to Game</button>
-        <button class="connect-btn" onclick="disconnect()">Disconnect</button>
-      </div>
-      <div id="messages"></div>
-      <p>
-        <strong>Game Server:</strong> Colyseus multiplayer server is running!
-      </p>
-      <p><a href="/monitor" target="_blank">View Server Monitor</a></p>
+    <h1>🐌 Snailmail Game</h1>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div class="status">
+      <p>Status: <span id="status">Disconnected</span></p>
     </div>
+    <div class="controls">
+      <button onclick="movePlayer(-1, 0)">Left</button>
+      <button onclick="movePlayer(1, 0)">Right</button>
+      <button onclick="movePlayer(0, -1)">Up</button>
+      <button onclick="movePlayer(0, 1)">Down</button>
+    </div>
+    <p><a href="/monitor" target="_blank">View Server Monitor</a></p>
 
     <script src="https://unpkg.com/colyseus.js@^0.16.0/dist/colyseus.js"></script>
     <script>
+      const canvas = document.getElementById("gameCanvas");
+      const ctx = canvas.getContext("2d");
       let client;
       let room;
+      let players = {};
 
-      function addMessage(msg) {
-        const messages = document.getElementById("messages");
-        messages.innerHTML +=
-          "<div>" + new Date().toLocaleTimeString() + ": " + msg + "</div>";
-        messages.scrollTop = messages.scrollHeight;
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height); // Clear canvas
+
+        // Draw players
+        for (const id in players) {
+          const player = players[id];
+          ctx.fillStyle = id === room.sessionId ? "blue" : "red"; // Current player is blue
+          ctx.fillRect(player.x * 50, player.y * 50, 40, 40); // Scale positions for visibility
+        }
+
+        requestAnimationFrame(draw);
       }
 
       function connect() {
@@ -85,27 +81,43 @@
           .then((roomInstance) => {
             room = roomInstance;
             document.getElementById("status").textContent = "Connected";
-            addMessage("Connected to room: " + room.id);
+            console.log("Connected to room:", room.id);
 
-            room.onStateChange((state) => {
-              addMessage("State: " + JSON.stringify(state));
+            room.state.players.onAdd((player, sessionId) => {
+              players[sessionId] = player;
+              console.log("Player joined:", sessionId, player);
+              player.onChange = () => {
+                // Player position changed
+              };
+            });
+
+            room.state.players.onRemove((player, sessionId) => {
+              delete players[sessionId];
+              console.log("Player left:", sessionId);
             });
 
             room.onLeave(() => {
               document.getElementById("status").textContent = "Disconnected";
-              addMessage("Left room");
+              console.log("Left room");
+              players = {};
             });
+
+            draw(); // Start drawing game
           })
           .catch((e) => {
-            addMessage("Failed to connect: " + e.message);
+            document.getElementById("status").textContent = "Failed to connect";
+            console.error("Failed to connect:", e);
           });
       }
 
-      function disconnect() {
+      function movePlayer(x, y) {
         if (room) {
-          room.leave();
+          room.send("move", { x, y });
         }
       }
+
+      // Automatically connect on page load
+      connect();
     </script>
   </body>
 </html>

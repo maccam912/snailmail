@@ -11,6 +11,7 @@ RUN npm ci && npm cache clean --force
 
 # Copy source code
 COPY . .
+COPY ./public /app/public # Explicitly copy public directory
 
 # Build the application
 RUN npm run build
@@ -33,7 +34,7 @@ WORKDIR /app
 
 # Copy built application from builder stage
 COPY --from=builder /app/build ./build
-COPY --from=builder /app/public ./public
+COPY --from=builder /app/public ./public # Ensure this picks up changes
 
 # Copy only production dependencies
 COPY --from=prod-deps /app/node_modules ./node_modules
