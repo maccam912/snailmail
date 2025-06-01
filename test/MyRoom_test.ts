@@ -45,29 +45,56 @@ describe("testing your Colyseus app", () => {
     await room.waitForNextPatch();
 
     // Check if player's x coordinate changed as expected
-    assert.strictEqual(player.x, initialX + 1, "Player X should have incremented by 1");
+    assert.strictEqual(
+      player.x,
+      initialX + 1,
+      "Player X should have incremented by 1",
+    );
     assert.strictEqual(player.y, initialY, "Player Y should not have changed");
 
     // Test another move
     room.send("move", { y: -1 });
     await room.waitForNextPatch();
-    assert.strictEqual(player.x, initialX + 1, "Player X should remain the same after Y move");
-    assert.strictEqual(player.y, initialY - 1, "Player Y should have decremented by 1");
+    assert.strictEqual(
+      player.x,
+      initialX + 1,
+      "Player X should remain the same after Y move",
+    );
+    assert.strictEqual(
+      player.y,
+      initialY - 1,
+      "Player Y should have decremented by 1",
+    );
 
     // Test move with undefined values (should not change position)
     const currentX = player.x;
     const currentY = player.y;
     room.send("move", { x: undefined, y: undefined });
     await room.waitForNextPatch();
-    assert.strictEqual(player.x, currentX, "Player X should not change if message.x is undefined");
-    assert.strictEqual(player.y, currentY, "Player Y should not change if message.y is undefined");
+    assert.strictEqual(
+      player.x,
+      currentX,
+      "Player X should not change if message.x is undefined",
+    );
+    assert.strictEqual(
+      player.y,
+      currentY,
+      "Player Y should not change if message.y is undefined",
+    );
 
     // Test move with only one coordinate defined
     room.send("move", { x: 5 });
     await room.waitForNextPatch();
-    assert.strictEqual(player.x, currentX + 5, "Player X should update correctly when only x is sent");
-    assert.strictEqual(player.y, currentY, "Player Y should remain same when only x is sent");
-
+    assert.strictEqual(
+      player.x,
+      currentX + 5,
+      "Player X should update correctly when only x is sent",
+    );
+    assert.strictEqual(
+      player.y,
+      currentY,
+      "Player Y should remain same when only x is sent",
+    );
 
     await client1.leave();
   });
