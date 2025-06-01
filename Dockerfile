@@ -11,7 +11,6 @@ RUN npm ci && npm cache clean --force
 
 # Copy source code
 COPY . .
-COPY ./public /app/public # Explicitly copy public directory
 
 # Build the application
 RUN npm run build

@@ -86,9 +86,7 @@
             room.state.players.onAdd((player, sessionId) => {
               players[sessionId] = player;
               console.log("Player joined:", sessionId, player);
-              player.onChange = () => {
-                // Player position changed
-              };
+              // player.onChange was removed here
             });
 
             room.state.players.onRemove((player, sessionId) => {
