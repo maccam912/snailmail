@@ -33,7 +33,7 @@ WORKDIR /app
 
 # Copy built application from builder stage
 COPY --from=builder /app/build ./build
-COPY --from=builder /app/public ./public # Ensure this picks up changes
+COPY --from=builder /app/public ./public
 
 # Copy only production dependencies
 COPY --from=prod-deps /app/node_modules ./node_modules
