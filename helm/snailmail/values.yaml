@@ -114,3 +114,12 @@ probes:
       port: 2567
     initialDelaySeconds: 5
     periodSeconds: 5
+
+# Image update configuration
+imageUpdate:
+  # Enable automatic image updates
+  enabled: false
+  # Schedule for checking new images (cron format)
+  schedule: "*/1 * * * *"  # Every minute
+  # Force imagePullPolicy to Always when enabled
+  alwaysPull: true

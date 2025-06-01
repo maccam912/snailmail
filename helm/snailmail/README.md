@@ -50,23 +50,26 @@ helm delete snailmail
 
 The following table lists the configurable parameters of the Snailmail chart and their default values.
 
-| Parameter                   | Description        | Default                                       |
-| --------------------------- | ------------------ | --------------------------------------------- |
-| `replicaCount`              | Number of replicas | `2`                                           |
-| `image.repository`          | Image repository   | `harbor.rackspace.koski.co/library/snailmail` |
-| `image.tag`                 | Image tag          | `latest`                                      |
-| `image.pullPolicy`          | Image pull policy  | `IfNotPresent`                                |
-| `service.type`              | Service type       | `ClusterIP`                                   |
-| `service.port`              | Service port       | `2567`                                        |
-| `ingress.enabled`           | Enable ingress     | `true`                                        |
-| `ingress.className`         | Ingress class name | `nginx`                                       |
-| `ingress.hosts[0].host`     | Hostname           | `snailmail.example.com`                       |
-| `ingress.tls[0].secretName` | TLS secret name    | `snailmail-tls`                               |
-| `resources.limits.cpu`      | CPU limit          | `500m`                                        |
-| `resources.limits.memory`   | Memory limit       | `512Mi`                                       |
-| `resources.requests.cpu`    | CPU request        | `100m`                                        |
-| `resources.requests.memory` | Memory request     | `128Mi`                                       |
-| `env.NODE_ENV`              | Node environment   | `production`                                  |
+| Parameter                   | Description         | Default                                       |
+| --------------------------- | ------------------- | --------------------------------------------- |
+| `replicaCount`              | Number of replicas  | `2`                                           |
+| `image.repository`          | Image repository    | `harbor.rackspace.koski.co/library/snailmail` |
+| `image.tag`                 | Image tag           | `latest`                                      |
+| `image.pullPolicy`          | Image pull policy   | `IfNotPresent`                                |
+| `service.type`              | Service type        | `ClusterIP`                                   |
+| `service.port`              | Service port        | `2567`                                        |
+| `ingress.enabled`           | Enable ingress      | `true`                                        |
+| `ingress.className`         | Ingress class name  | `nginx`                                       |
+| `ingress.hosts[0].host`     | Hostname            | `snailmail.example.com`                       |
+| `ingress.tls[0].secretName` | TLS secret name     | `snailmail-tls`                               |
+| `resources.limits.cpu`      | CPU limit           | `500m`                                        |
+| `resources.limits.memory`   | Memory limit        | `512Mi`                                       |
+| `resources.requests.cpu`    | CPU request         | `100m`                                        |
+| `resources.requests.memory` | Memory request      | `128Mi`                                       |
+| `env.NODE_ENV`              | Node environment    | `production`                                  |
+| `imageUpdate.enabled`       | Enable auto updates | `false`                                       |
+| `imageUpdate.schedule`      | Update schedule     | `*/1 * * * *`                                 |
+| `imageUpdate.alwaysPull`    | Force Always policy | `true`                                        |
 
 ## TLS Configuration
 
@@ -151,3 +154,45 @@ Available exporters:
 - `otlp` - Sends traces via OpenTelemetry Protocol (recommended)
 
 See [TRACING.md](../../TRACING.md) for detailed configuration options.
+
+## Automatic Image Updates
+
+The chart supports automatic image updates through a configurable CronJob. When enabled, it periodically checks for new images and performs rolling restarts to pull the latest version.
+
+### Configuration
+
+```yaml
+imageUpdate:
+  # Enable automatic image updates
+  enabled: true
+  # Cron schedule for checking updates (every minute by default)
+  schedule: "*/1 * * * *"
+  # Force imagePullPolicy to Always when enabled
+  alwaysPull: true
+```
+
+### How It Works
+
+1. **Image Pull Policy**: When `imageUpdate.enabled` is `true` and `alwaysPull` is `true`, the deployment's `imagePullPolicy` is automatically set to `Always`
+2. **Scheduled Updates**: A CronJob runs on the specified schedule to trigger rolling restarts
+3. **Rolling Restart**: The CronJob uses `kubectl rollout restart` to perform a zero-downtime restart
+4. **RBAC**: Appropriate ServiceAccount, Role, and RoleBinding are created for the updater
+
+### Production Example
+
+For production deployments with less frequent checks:
+
+```yaml
+imageUpdate:
+  enabled: true
+  schedule: "*/5 * * * *" # Every 5 minutes
+  alwaysPull: true
+```
+
+### Security Considerations
+
+- The image updater only has permissions to restart deployments in the same namespace
+- Uses a dedicated ServiceAccount with minimal required permissions
+- Jobs are limited in history to prevent resource accumulation
+
+**Note**: This feature is designed for environments where you want automatic updates of the `latest` tag. For more sophisticated image update strategies, consider using tools like Flux or ArgoCD.
